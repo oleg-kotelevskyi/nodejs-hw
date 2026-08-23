@@ -2,9 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
 import dotenv from 'dotenv';
-import notesRouter from './routes/notes.js';
-import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import { errorHandler } from './middlewares/errorHandler.js';
 
 dotenv.config();
 
@@ -28,11 +25,30 @@ export const setupServer = () => {
     throw new Error('Simulated server error');
   });
 
-  app.use('/notes', notesRouter);
+  app.get('/notes', (req, res) => {
+    res.status(200).json({
+      message: 'Retrieved all notes',
+    });
+  });
 
-  app.use(notFoundHandler);
+  app.get('/notes/:noteId', (req, res) => {
+    const id_param = req.params.noteId;
+    res.status(200).json({
+      message: `Retrieved note with ID: ${id_param}`,
+    });
+  });
 
-  app.use(errorHandler);
+  app.use((req, res, next) => {
+    res.status(404).json({
+      message: 'Route not found',
+    });
+  });
+
+  app.use((err, req, res, next) => {
+    res.status(500).json({
+      message: err.message || 'Something went wrong',
+    });
+  });
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -40,6 +56,7 @@ export const setupServer = () => {
 };
 
 setupServer();
+
 
 
 
