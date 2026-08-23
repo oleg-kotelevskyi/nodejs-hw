@@ -39,6 +39,7 @@ export const setupServer = () => {
   });
 };
 
+setupServer();
 
 
 
