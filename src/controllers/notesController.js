@@ -7,29 +7,42 @@ export const getAllNotes = async (req, res, next) => {
 
     const page = parseInt(req.query.page, 10) || 1;
     const perPage = parseInt(req.query.perPage, 10) || 10;
+    const skip = (page - 1) * perPage;
 
-    const filter = {};
+    let countQuery = Note.countDocuments();
 
     if (tag) {
-      filter.tag = tag;
+      countQuery = countQuery.where('tag').equals(tag);
     }
 
     if (search) {
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-      ];
+      countQuery = countQuery.where({
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { content: { $regex: search, $options: 'i' } },
+        ],
+      });
     }
 
-    const totalNotes = await Note.countDocuments(filter);
-
+    const totalNotes = await countQuery;
     const totalPages = Math.ceil(totalNotes / perPage);
 
-    const skip = (page - 1) * perPage;
+    let notesQuery = Note.find();
 
-    const notes = await Note.find(filter)
-      .skip(skip)
-      .limit(perPage);
+    if (tag) {
+      notesQuery = notesQuery.where('tag').equals(tag);
+    }
+
+    if (search) {
+      notesQuery = notesQuery.where({
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { content: { $regex: search, $options: 'i' } },
+        ],
+      });
+    }
+
+    const notes = await notesQuery.skip(skip).limit(perPage);
 
     res.status(200).json({
       page,
