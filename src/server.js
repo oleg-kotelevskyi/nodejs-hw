@@ -23,8 +23,10 @@ export const setupServer = async () => {
 
   app.use('/', notesRouter);
 
-  app.use(notFoundHandler);
   app.use(errors());
+
+  app.use(notFoundHandler);
+
   app.use(errorHandler);
 
   app.listen(PORT, () => {
@@ -33,7 +35,6 @@ export const setupServer = async () => {
 };
 
 setupServer();
-
 
 
 
