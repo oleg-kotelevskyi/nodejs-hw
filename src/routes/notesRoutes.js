@@ -42,14 +42,12 @@ router.delete(
 
 router.patch(
   '/notes/:noteId',
-  celebrate({
-    [Segments.PARAMS]: noteIdSchema,
-    [Segments.BODY]: updateNoteSchema
-  }),
+  celebrate(updateNoteSchema),
   updateNote
 );
 
 export default router;
+
 
 
 

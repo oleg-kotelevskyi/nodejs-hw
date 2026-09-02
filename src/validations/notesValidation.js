@@ -26,12 +26,18 @@ export const createNoteSchema = Joi.object().keys({
   tag: Joi.string().valid(...TAGS).optional(),
 });
 
-export const updateNoteSchema = Joi.object()
-  .keys({
-    title: Joi.string().min(1).optional(),
-    content: Joi.string().allow('').optional(),
-    tag: Joi.string().valid(...TAGS).optional(),
-  })
-  .min(1);
+export const updateNoteSchema = {
+  params: Joi.object().keys({
+    noteId: Joi.string().custom(objectIdCustomValidator).required(),
+  }),
+  body: Joi.object()
+    .keys({
+      title: Joi.string().min(1).optional(),
+      content: Joi.string().allow('').optional(),
+      tag: Joi.string().valid(...TAGS).optional(),
+    })
+    .min(1),
+};
+
 
 
